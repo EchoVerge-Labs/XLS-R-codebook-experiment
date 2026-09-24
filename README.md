@@ -13,7 +13,9 @@ reported with the confounds it cannot separate.
 | **B** — [`Experiment_B_Multilingual/`](Experiment_B_Multilingual/) | Does presence in the pre-training language list predict codebook fit, across 18 languages? | No. Equivalent to zero in three context regimes. |
 | **C** — [`Experiment_C_LayerProbe/`](Experiment_C_LayerProbe/) | If not the codebook, where by depth? | Nowhere in particular; all three languages use the same layers. |
 
-Full write-up with methodology, results and references: [`PAPER.html`](PAPER.html).
+Full write-up of the pre-registered experiments, with methodology and references:
+[`PAPER.html`](PAPER.html). The post-hoc analyses below — code overlap, the synthetic
+codebook deficit, the fine-tuned arm and its 6 h point — postdate it.
 
 ## Experiment A — quantization residual diagnostic
 
@@ -34,6 +36,20 @@ Tamil are fit **better** than English, not worse.
 
 A second finding fell out of the checkpoint used: XLSR-53 pre-trained on Tamil but
 **not** Sinhala, yet the two are statistically indistinguishable.
+
+Two post-hoc checks, added after review and not pre-registered, test the hypothesis in
+its mechanistic form: a language with no nearby codevectors should use a different or
+smaller region of the codebook. It does not. Sinhala and Tamil occupy 95.8–97.3 of 320
+entries per group against English's 97.5, overlap English's support at Jaccard
+0.98–1.00, and place every frame on a code English also uses. Only usage frequencies
+differ, and by about as much as English differs from a 1.45× speed-shifted copy of
+itself (Jensen–Shannon 0.036–0.082 against 0.079).
+
+The second check confirms the instrument can see such a gap at all. With the audio
+untouched, forbidding the codebook entries a language uses most raises its masked
+InfoNCE: removing 10% of English's used entries already exceeds the largest language
+difference in Experiment B, and removing 41–49% (26–32% for Sinhala and Tamil) reaches
+the ±0.289 margin. This holds for both checkpoints and at pre-training mask density.
 
 ## Experiment B — multilingual seen/unseen sweep
 
@@ -60,6 +76,11 @@ with a CTC head on the same splits, budget, vocabularies and seeds. It more than
 the frozen-probe error in every language — Sinhala 0.275 → 0.129, Tamil 0.170 → 0.062,
 English 0.221 → 0.093 — so at 3 h the binding constraint is labelled data and adaptation,
 not the representation. The ordering across languages is the same frozen or fine-tuned.
+
+At twice the budget (6 h, also post-hoc) the error keeps falling — Sinhala 0.129 → 0.108,
+English 0.093 → 0.081 — with the same speakers and test sets, and the gap between them
+narrows from 0.035 to 0.027. Tamil has no 6 h arm: OpenSLR-65's 30 training speakers
+hold only 3.48 h.
 
 ## Reproducing
 
