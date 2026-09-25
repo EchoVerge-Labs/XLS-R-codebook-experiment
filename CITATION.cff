@@ -30,6 +30,7 @@ authors:
     affiliation: University of Moratuwa
     orcid: "https://orcid.org/0000-0002-3936-8174"
 repository-code: "https://github.com/EchoVerge-Labs/XLS-R-codebook-experiment"
+license: MIT
 keywords:
   - self-supervised speech representations
   - low-resource speech recognition

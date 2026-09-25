@@ -9,8 +9,9 @@ Pre-registered, equivalence-bounded tests on Sinhala and Tamil with XLS-R 0.3B a
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.14%20·%20CUDA%2013.0-EE4C2C?logo=pytorch&logoColor=white)](docs/reproducing.md#environment)
 [![Transformers](https://img.shields.io/badge/transformers-5.16-FFD21E)](docs/reproducing.md#environment)
 [![Design](https://img.shields.io/badge/design-pre--registered-2a78d6)](docs/methodology.md#pre-registration-and-amendments)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[Key findings](#key-findings) · [Results](#results) · [Study design](#study-design) · [Repository layout](#repository-layout) · [Reproducing](#reproducing) · [Documentation](docs/README.md) · [Citation](#citation)
+[Key findings](#key-findings) · [Results](#results) · [Study design](#study-design) · [Repository layout](#repository-layout) · [Reproducing](#reproducing) · [Documentation](docs/README.md) · [Citation](#citation) · [License](#license)
 
 </div>
 
@@ -148,7 +149,8 @@ Every experiment follows the same rules, set out in the
 │   ├── assets/                  #   figures (light and dark)
 │   └── scripts/make_figures.py  #   regenerates every figure from versioned results
 ├── PAPER.html                   # technical report of the pre-registered experiments
-└── CITATION.cff
+├── CITATION.cff
+└── LICENSE
 ```
 
 Result files are versioned; audio, staged copies and the ~150 GB feature cache are not.
@@ -214,6 +216,15 @@ and BibTeX from it.
   year   = {2026}
 }
 ```
+
+## License
+
+The code in this repository is released under the [MIT License](LICENSE).
+
+The corpora and model checkpoints it uses are not part of this repository and keep their
+own licences: CC BY-SA 4.0 for the OpenSLR corpora, CC BY 4.0 for FLEURS, CC0 for Common
+Voice, and Apache 2.0 for the XLS-R checkpoints. The in-the-wild YouTube audio is not
+redistributed. See [Data](docs/data.md) for details.
 
 ---
 
