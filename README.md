@@ -1,103 +1,220 @@
+<div align="center">
+
 # XLS-R codebook experiments
 
-Does XLS-R's frozen acoustic codebook under-represent Sinhala and Tamil, and if not,
-where does the low-resource penalty actually live?
+**Is the acoustic codebook the bottleneck for low-resource speech recognition?**<br>
+Pre-registered, equivalence-bounded tests on Sinhala and Tamil with XLS-R 0.3B and XLSR-53.
 
-Three experiments, run on an NVIDIA DGX Spark (GB10, ARM64, CUDA 13.0). Each one is
-pre-registered before it runs, validated against a control that is known to fail, and
-reported with the confounds it cannot separate.
+[![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](docs/reproducing.md#environment)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.14%20·%20CUDA%2013.0-EE4C2C?logo=pytorch&logoColor=white)](docs/reproducing.md#environment)
+[![Transformers](https://img.shields.io/badge/transformers-5.16-FFD21E)](docs/reproducing.md#environment)
+[![Design](https://img.shields.io/badge/design-pre--registered-2a78d6)](docs/methodology.md#pre-registration-and-amendments)
 
-| | Question | Answer |
-|---|---|---|
-| **A** — [`Experiment_A_Diagnostic/`](Experiment_A_Diagnostic/) | Is the codebook a worse fit for Sinhala/Tamil than for English? | No. Equivalence-bounded null; the sign is reversed. |
-| **B** — [`Experiment_B_Multilingual/`](Experiment_B_Multilingual/) | Does presence in the pre-training language list predict codebook fit, across 18 languages? | No. Equivalent to zero in three context regimes. |
-| **C** — [`Experiment_C_LayerProbe/`](Experiment_C_LayerProbe/) | If not the codebook, where by depth? | Nowhere in particular; all three languages use the same layers. |
+[Key findings](#key-findings) · [Results](#results) · [Study design](#study-design) · [Repository layout](#repository-layout) · [Reproducing](#reproducing) · [Documentation](docs/README.md) · [Citation](#citation)
 
-Full write-up of the pre-registered experiments, with methodology and references:
-[`PAPER.html`](PAPER.html). The post-hoc analyses below — code overlap, the synthetic
-codebook deficit, the fine-tuned arm and its 6 h point — postdate it.
+</div>
 
-## Experiment A — quantization residual diagnostic
+---
 
-Measures how well the frozen quantizer represents each language, on 4,999 clips
-(Sinhala and Tamil YouTube, read OpenSLR, Common Voice English) plus five deliberately
-corrupted positive controls.
+Self-supervised speech models such as XLS-R still leave a wide gap between high- and
+low-resource languages. For wav2vec 2.0-style models an obvious suspect is the product
+quantizer: its codebook is learned on pre-training data dominated by a few languages, so it
+may hold no codevectors near the sounds of a scarce one. If so, extending the codebook would
+be a direct remedy.
 
-The headline finding is methodological as much as empirical. The residual the brief
-asked for, `‖z − q‖²`, is **not computable** for wav2vec2 — `z` is 512-d and `q` is
-768-d, and the quantizer never reconstructs `z`. The natural substitute, an unmasked
-contrastive distance, turns out to be a **dead instrument**: white noise scores only
-1.11× English on it, so no audio whatsoever could clear the "gap detected" threshold.
+This repository tests that premise before anything is built on it, in three pre-registered
+experiments and three post-hoc checks. Each one is validated against a control that is known
+to fail, and reported with the confounds it cannot separate.
 
-Measuring at *masked* positions instead — the only place wav2vec2's objective aligns
-those projections — gives an instrument with real range: white noise collapses to a
-+0.010 positive/negative gap against +0.45 for speech. On that instrument Sinhala and
-Tamil are fit **better** than English, not worse.
+## Key findings
 
-A second finding fell out of the checkpoint used: XLSR-53 pre-trained on Tamil but
-**not** Sinhala, yet the two are statistically indistinguishable.
+- **The usual diagnostic cannot answer the question.** The quantization residual
+  `‖z − q‖²` is undefined for wav2vec 2.0: `z` is 512-d, `q` is 768-d, and the codevectors
+  are never trained to reconstruct `z`. Its unmasked substitute is nearly blind, rating white
+  noise only 1.11× English. Measuring at *masked* positions instead gives an instrument with
+  real range: white noise collapses the positive–negative gap from +0.453 to +0.010.
+- **Sinhala and Tamil are fit no worse than English** (0.93–0.95× English's InfoNCE on
+  read speech) and **use the same codebook entries**: Jaccard overlap 0.98–1.00 with
+  English's used set, and every frame lands on a code English also uses.
+- **Pre-training membership has an equivalence-bounded null effect.** Across 18 languages in
+  nine family-matched pairs, every 90% CI lies inside a margin equal to removing 27–43% of a
+  language's codebook entries (TOST p ≤ 0.019).
+- **No depth-localised penalty.** Linear CTC probes on all 24 layers peak at layers 15, 17
+  and 15 for Sinhala, Tamil and English, well within the pre-registered tolerance of a
+  three-layer shift.
+- **The limit is labelled data, not the representation.** Fine-tuning at the same 3 h budget
+  removes 53–64% of the frozen-probe error in every language, and keeps improving at 6 h.
 
-Two post-hoc checks, added after review and not pre-registered, test the hypothesis in
-its mechanistic form: a language with no nearby codevectors should use a different or
-smaller region of the codebook. It does not. Sinhala and Tamil occupy 95.8–97.3 of 320
-entries per group against English's 97.5, overlap English's support at Jaccard
-0.98–1.00, and place every frame on a code English also uses. Only usage frequencies
-differ, and by about as much as English differs from a 1.45× speed-shifted copy of
-itself (Jensen–Shannon 0.036–0.082 against 0.079).
+The one language-specific signal, probe instability at the best layers, could not be
+separated from corpus.
 
-The second check confirms the instrument can see such a gap at all. With the audio
-untouched, forbidding the codebook entries a language uses most raises its masked
-InfoNCE: removing 10% of English's used entries already exceeds the largest language
-difference in Experiment B, and removing 41–49% (26–32% for Sinhala and Tamil) reaches
-the ±0.289 margin. This holds for both checkpoints and at pre-training mask density.
+## Results
 
-## Experiment B — multilingual seen/unseen sweep
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/fig1-codebook-fit-dark.png">
+  <img alt="Masked InfoNCE relative to English for each condition. Sinhala and Tamil sit at 0.69 to 0.95 of English; positive controls rise from 1.10 (speed/pitch) to 1.71 (white noise)." src="docs/assets/fig1-codebook-fit-light.png">
+</picture>
 
-Scales A's accidental natural experiment to 18 languages in 9 **family-matched pairs**,
-split on whether XLSR-53 saw them in pre-training. Several pairs are close relatives
-across the membership line (Zulu/Xhosa, Estonian/Finnish, Tamil/Malayalam, Polish/Czech).
+**Experiment A.** The masked instrument separates corrupted audio from speech, and places
+every Sinhala and Tamil arm at or below English. The YouTube arms' advantage partly
+reflects their three-times-longer clips, so the claim rests on the length-matched read arms.
+[Details →](docs/experiment-a.md)
 
-The result is not merely non-significant but **statistically equivalent to zero**,
-against a margin calibrated on Experiment A's positive controls: the paired InfoNCE
-difference is +0.033 / +0.040 / +0.041 across full-clip, 6 s-crop and 9 s-crop arms, with
-every 90% CI inside ±0.289 — the penalty a 1.45× speed shift inflicts on this codebook.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/fig2-codebook-deficit-dark.png">
+  <img alt="Increase in masked InfoNCE as the most-used codebook entries are forbidden at inference. Removing 10% of English's entries raises InfoNCE by 0.063, above the largest Study 2 language difference of 0.041; Sinhala and Tamil respond more steeply." src="docs/assets/fig2-codebook-deficit-light.png">
+</picture>
 
-Supporting: a negative control on XLS-R 0.3B returns dz = −0.01, and the dose–response
-between pre-training hours and fit is flat within the low-resource range these languages
-occupy (ρ = −0.014 over 33–321 h).
+**Synthetic codebook deficit (post-hoc).** With the audio untouched and codebook entries
+removed, the metric responds at once: removing 10% of English's entries already exceeds
+every language difference in Experiment B. A codebook that lacked units for a language would
+have been seen. [Details →](docs/experiment-a.md#synthetic-codebook-deficit)
 
-## Experiment C — layer-wise probing
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/fig3-equivalence-dark.png">
+  <img alt="Forest plot of the paired InfoNCE difference, unseen minus seen, for full clips, 6.0 s crops and 9.0 s crops. All three 90% confidence intervals lie inside the ±0.289 equivalence margin." src="docs/assets/fig3-equivalence-light.png">
+</picture>
 
-Localises the penalty by depth: linear CTC and speaker-ID probes on each of 24
-transformer layers, 3 h of labelled audio per language matched exactly, 3 seeds per cell.
+**Experiment B.** Paired differences of +0.033, +0.040 and +0.041 across the three context
+regimes, all statistically equivalent to zero. A negative control on XLS-R 0.3B, which saw
+17 of the 18 languages, gives d_z = −0.01. [Details →](docs/experiment-b.md)
 
-A **fine-tuned arm** (added after review, not pre-registered) trains the same checkpoint
-with a CTC head on the same splits, budget, vocabularies and seeds. It more than halves
-the frozen-probe error in every language — Sinhala 0.275 → 0.129, Tamil 0.170 → 0.062,
-English 0.221 → 0.093 — so at 3 h the binding constraint is labelled data and adaptation,
-not the representation. The ordering across languages is the same frozen or fine-tuned.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/fig4-layer-profiles-dark.png">
+  <img alt="CTC character error rate by transformer layer, normalised to each language's best layer. All three languages bottom out at layers 15 to 17; a randomly initialised model shows no depth structure." src="docs/assets/fig4-layer-profiles-light.png">
+</picture>
 
-At twice the budget (6 h, also post-hoc) the error keeps falling — Sinhala 0.129 → 0.108,
-English 0.093 → 0.081 — with the same speakers and test sets, and the gap between them
-narrows from 0.035 to 0.027. Tamil has no 6 h arm: OpenSLR-65's 30 training speakers
-hold only 3.48 h.
+**Experiment C.** Character information peaks at layers 15–17 and speaker identity at
+layer 4 in all three languages; a randomly initialised model shows no depth structure.
+[Details →](docs/experiment-c.md)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/fig5-budget-dark.png">
+  <img alt="Character error rate against labelled hours for each language, frozen probe versus fine-tuned model. Fine-tuning roughly halves the frozen-probe error at 3 h, and Sinhala and English keep improving at 6 h." src="docs/assets/fig5-budget-light.png">
+</picture>
+
+**Fine-tuning (post-hoc).** No language has saturated at 3 h, fine-tuning halves the error,
+and doubling the data keeps helping, the low-resource language slightly more.
+[Details →](docs/experiment-c.md#post-hoc-fine-tuning-at-3-h-and-6-h)
+
+### At a glance
+
+| | Question | Answer | Status |
+|---|---|---|---|
+| **A** | Is the codebook a worse fit for Sinhala and Tamil than for English? | No: fit no worse, same entries used | Pre-registered |
+| | Would the metric see a damaged codebook? | Yes: 10% of entries removed exceeds every language difference | Post-hoc |
+| **B** | Does pre-training membership predict codebook fit across 18 languages? | No: equivalent to zero in three context regimes | Pre-registered |
+| **C** | If not the codebook, is there a penalty at some depth? | No: best layer and depth centroid within the pre-registered tolerance | Pre-registered |
+| | Does the frozen representation limit adapted performance? | No: fine-tuning halves the error at 3 h and still improves at 6 h | Post-hoc |
+
+## Study design
+
+```mermaid
+flowchart LR
+    H["Hypothesis<br/>the frozen codebook lacks<br/>units for Sinhala and Tamil"]
+    A["<b>A · Codebook fit</b><br/>4,999 clips, 5 positive controls<br/>XLS-R 0.3B and XLSR-53"]
+    B["<b>B · Membership</b><br/>18 FLEURS languages<br/>9 family-matched pairs"]
+    C["<b>C · Layer probing</b><br/>24 layers, exactly 3 h<br/>per language"]
+    A2["Code overlap<br/>Synthetic codebook deficit"]
+    C2["Fine-tuning<br/>at 3 h and 6 h"]
+    H --> A --> B --> C
+    A -. post-hoc .-> A2
+    C -. post-hoc .-> C2
+```
+
+Every experiment follows the same rules, set out in the
+[methodology](docs/methodology.md):
+
+1. **Pre-register.** Design, comparisons and decision criteria are committed before any
+   result exists; changes are recorded as dated amendments, never edited silently.
+2. **Validate the instrument.** A null is only read as a null after a positive control shows
+   the measurement can move.
+3. **Bound the null.** Absence claims use equivalence tests against a margin calibrated on
+   those controls, not a non-significant p-value.
+4. **Label the rest.** Analyses added after review are marked post-hoc everywhere they appear.
+
+## Repository layout
+
+```
+.
+├── Experiment_A_Diagnostic/     # codebook fit, controls, code overlap, codebook deficit
+│   ├── results/                 #   XLS-R 0.3B outputs (+ codebook_deficit/)
+│   └── results_xlsr53/          #   XLSR-53 outputs
+├── Experiment_B_Multilingual/   # 18-language seen/unseen sweep and equivalence tests
+│   └── results/
+├── Experiment_C_LayerProbe/     # layer-wise probes, collapse rate, fine-tuning
+│   └── results/
+├── docs/                        # methodology, per-experiment pages, data, reproduction
+│   ├── assets/                  #   figures (light and dark)
+│   └── scripts/make_figures.py  #   regenerates every figure from versioned results
+├── PAPER.html                   # technical report of the pre-registered experiments
+└── CITATION.cff
+```
+
+Result files are versioned; audio, staged copies and the ~150 GB feature cache are not.
+Every script regenerates what it needs. See [Data](docs/data.md).
 
 ## Reproducing
 
 ```bash
-python -m venv ~/venv && ~/venv/bin/pip install \
-    torch torchaudio --index-url https://download.pytorch.org/whl/cu130
+python -m venv ~/venv
+~/venv/bin/pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu130
 ~/venv/bin/pip install transformers soundfile numpy scipy pandas pyarrow matplotlib
 ```
 
-ARM64 note: the `cu121` wheels commonly cited do not exist for aarch64 and would not
-support GB10 (sm_121) if they did. Use the `cu130` index.
+The experiments ran on an NVIDIA DGX Spark (GB10, ARM64, CUDA 13.0). On ARM64, use the
+`cu130` wheel index; the commonly cited `cu121` wheels do not exist for aarch64.
 
-Audio corpora, extracted features and staged copies are not versioned — Experiment C's
-feature cache alone is 87 GB. Every script regenerates what it needs.
+The full run order for each experiment, the path setup the scripts expect, and runtimes are
+in **[docs/reproducing.md](docs/reproducing.md)**. To regenerate the figures on this page from
+the versioned results, with no data or GPU needed:
 
-## Conventions
+```bash
+python docs/scripts/make_figures.py
+```
 
-Each experiment holds its pre-registered configuration in the repository, including the
-decision criteria fixed before any result existed, and records amendments with the
-evidence that motivated them rather than editing them silently.
+## Documentation
+
+| | |
+|---|---|
+| [Methodology](docs/methodology.md) | The instrument, positive controls, equivalence testing, pre-registration |
+| [Experiment A](docs/experiment-a.md) | Codebook fit, code overlap, synthetic codebook deficit |
+| [Experiment B](docs/experiment-b.md) | Pre-training membership across 18 languages |
+| [Experiment C](docs/experiment-c.md) | Layer-wise probing, probe collapse, fine-tuning |
+| [Data](docs/data.md) | Corpora, licences, sampling, what is versioned |
+| [Reproducing](docs/reproducing.md) | Environment, run order, runtimes |
+| [`PAPER.html`](PAPER.html) | Full technical report of the pre-registered experiments; predates the post-hoc analyses |
+
+## Limitations
+
+- Apart from the YouTube arm of Experiment A, all audio is **read speech**; practical
+  systems face spontaneous speech.
+- **Language and corpus are confounded** throughout (English is Common Voice; Sinhala and
+  Tamil are OpenSLR), and the one attempt to separate them was inconclusive.
+- The equivalence margins exclude **sizeable** deficits only, equivalent to removing 13–43%
+  of a language's codebook entries; a smaller deficit could pass undetected.
+- Samples are small: nine pairs in Experiment B, three languages in Experiment C. Absolute
+  CER cannot be compared across scripts.
+- The claims are scoped to **product-quantized** models; HuBERT-family objectives are not
+  tested.
+
+## Citation
+
+If you use this code or these results, please cite the repository. Citation metadata is in
+[`CITATION.cff`](CITATION.cff), and GitHub's **Cite this repository** button produces APA
+and BibTeX from it.
+
+```bibtex
+@software{hussaindeen_xlsr_codebook_experiments,
+  author = {Hussaindeen, Anas and Imthiyas, Ifadha and Muthumala, Vihanga and
+            Talagala, Samadhi and Thayasivam, Uthayasanker},
+  title  = {{XLS-R} codebook experiments: equivalence-bounded tests of the acoustic
+            codebook on {Sinhala} and {Tamil}},
+  url    = {https://github.com/EchoVerge-Labs/XLS-R-codebook-experiment},
+  year   = {2026}
+}
+```
+
+---
+
+<sub>Department of Computer Science and Engineering, University of Moratuwa, Sri Lanka.</sub>

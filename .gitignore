@@ -8,6 +8,8 @@
 !Experiment_B_Multilingual/
 !Experiment_C_LayerProbe/
 !PAPER.html
+!CITATION.cff
+!docs/
 
 # ---------------------------------------------------------------- bulk data
 # Audio corpora, extracted features and staged copies are reproducible from the

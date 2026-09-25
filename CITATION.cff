@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use this code or these results, please cite them as below."
+type: software
+title: "XLS-R codebook experiments: equivalence-bounded tests of the acoustic codebook on Sinhala and Tamil"
+abstract: >-
+  Pre-registered experiments testing whether the frozen product-quantizer codebook of
+  XLS-R 0.3B and XLSR-53 under-represents Sinhala and Tamil: masked-position codebook fit
+  with positive controls, an 18-language family-matched equivalence test of pre-training
+  membership, layer-wise linear probing, and post-hoc code-overlap, synthetic
+  codebook-deficit and fine-tuning analyses.
+authors:
+  - given-names: Anas
+    family-names: Hussaindeen
+    affiliation: University of Moratuwa
+    orcid: "https://orcid.org/0009-0001-2856-4890"
+  - given-names: Ifadha
+    family-names: Imthiyas
+    affiliation: University of Moratuwa
+    orcid: "https://orcid.org/0009-0007-0606-969X"
+  - given-names: Vihanga
+    family-names: Muthumala
+    affiliation: University of Moratuwa
+    orcid: "https://orcid.org/0009-0007-4159-1045"
+  - given-names: Samadhi
+    family-names: Talagala
+    affiliation: University of Moratuwa
+    orcid: "https://orcid.org/0009-0004-6376-3686"
+  - given-names: Uthayasanker
+    family-names: Thayasivam
+    affiliation: University of Moratuwa
+    orcid: "https://orcid.org/0000-0002-3936-8174"
+repository-code: "https://github.com/EchoVerge-Labs/XLS-R-codebook-experiment"
+keywords:
+  - self-supervised speech representations
+  - low-resource speech recognition
+  - vector quantization
+  - layer-wise probing
+  - equivalence testing
+  - Sinhala
+  - Tamil
