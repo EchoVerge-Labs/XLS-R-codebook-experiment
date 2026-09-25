@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import analyse_b as A
 from selection import PAIRS, META
 
-RES = "results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 ARMS = [("_full", "full", "Full clips (PRIMARY OVERALL)"),
         ("_crop6.0", "crop6", "6.0 s crop (PRIMARY CROPPED)"),
         ("_crop9.0", "crop9", "9.0 s crop (SENSITIVITY)")]

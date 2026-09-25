@@ -3,12 +3,12 @@
 import json, sys, os, hashlib, subprocess
 import pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Experiment_A_Diagnostic"))
 import selection as S
 from final_stats import STAGE_A_CONTROLS, MARGIN_PRIMARY, MARGIN_SECONDARY
 import masked_probe as MP  # noqa - for protocol constants
 
-RES = "results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 ARMS = [("_full", "full"), ("_crop6.0", "crop6"), ("_crop9.0", "crop9")]
 
 frames = []

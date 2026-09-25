@@ -5,7 +5,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from selection import PAIRS, META, ALL, CROP_PERCENTILE
 
-RES = "results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 KERNELS, STRIDES = [10, 3, 3, 3, 3, 2, 2], [5, 2, 2, 2, 2, 2, 2]
 
 

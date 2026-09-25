@@ -30,19 +30,15 @@ python -m venv ~/venv
 
 ## Paths
 
-The scripts in Experiments A and B resolve their working directories from
-`~/EchoVerge-LABS/Experiment_A_Diagnostic` and `~/EchoVerge-LABS/Experiment_B_Multilingual`,
-where they lived when they were run. From a clone elsewhere, link them into place first:
+Every script resolves its own folder from its location, so the repository can be cloned
+anywhere and each script run from any working directory. Experiment B imports
+Experiment A's measurement code from the sibling folder, so keep the three experiment
+folders side by side.
 
-```bash
-mkdir -p ~/EchoVerge-LABS
-ln -s "$PWD/Experiment_A_Diagnostic"   ~/EchoVerge-LABS/Experiment_A_Diagnostic
-ln -s "$PWD/Experiment_B_Multilingual" ~/EchoVerge-LABS/Experiment_B_Multilingual
-```
-
-Experiment C resolves paths relative to its own folder and needs no link. Scripts that
-read the team's storage mount (`sample_and_stage.py`, `inventory.py`, `stage_si_ta.py`,
-`build_6h_split.py`) expect it at `~/google-drive/Community Datasets`.
+Scripts that read the team's storage mount (`inventory.py`, `sample_and_stage.py`,
+`stage_si_ta.py`, `build_6h_split.py`) expect it at `~/google-drive/Community Datasets`
+(and the YouTube corpora at `~/google-drive/Pre Processed Data`). Without the mount,
+`build_read_manifest.py` rebuilds Experiment A's read arms from public sources.
 
 ## Experiment A
 

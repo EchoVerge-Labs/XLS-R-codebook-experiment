@@ -50,8 +50,8 @@ from transformers.models.wav2vec2.modeling_wav2vec2 import (
     _compute_mask_indices, _sample_negative_indices)
 
 warnings.filterwarnings("ignore")
-ROOT = os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic")
-REPO = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.abspath(__file__))
+REPO = ROOT
 MODELS = {"xlsr300m": "facebook/wav2vec2-xls-r-300m",      # XLS-R 0.3B (Experiment A)
           "xlsr53": "facebook/wav2vec2-large-xlsr-53"}      # XLSR-53 (Experiment B)
 SR, MASK_SPAN, N_NEG, TEMP, MAX_S = 16000, 10, 100, 0.1, 30.0

@@ -9,10 +9,10 @@ from scipy import stats
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from selection import META, PAIRS, ALL
 
-RES = "results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 NAME = {r["config"]: r["name"] for r in json.load(open(f"{RES}/fleurs_languages.json"))}
 rows = []
-for d in sorted(glob.glob("data/audio/*/.done")):
+for d in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "audio", "*", ".done"))):
     m = json.load(open(d))
     dur = np.array([r["duration"] for r in m["records"]])
     c = m["config"]

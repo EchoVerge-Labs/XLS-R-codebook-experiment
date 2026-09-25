@@ -1,7 +1,8 @@
-import json, numpy as np, matplotlib
+import json, os, numpy as np, matplotlib
+HERE = os.path.dirname(os.path.abspath(__file__))
 matplotlib.use("Agg"); import matplotlib.pyplot as plt
-d=json.load(open('results/collapse_rate.json'))
-sw=json.load(open('results/probe_results_xlsr300m.json'))
+d=json.load(open(os.path.join(HERE, "results", "collapse_rate.json")))
+sw=json.load(open(os.path.join(HERE, "results", "probe_results_xlsr300m.json")))
 L=[0,4,8,12,15,17,20,22]; langs=['sinhala','tamil','english']
 COL={"sinhala":"#D1495B","tamil":"#EDAE49","english":"#00798C"}
 NAME={"sinhala":"Sinhala","tamil":"Tamil","english":"English"}
@@ -32,5 +33,5 @@ fig.text(.5,.015,"Left: collapse rate measured directly from 9 independent inits
          "Right: whether discarding collapsed runs biases the reported curve - the surviving-run CER at 9 draws against the\n"
          "3-seed sweep value. English L4 (+0.073) is ordinary seed variance, not cleaning: no English cell collapsed at all.",
          ha="center",fontsize=8.4,style="italic")
-fig.tight_layout(rect=[0,.07,1,.92]); fig.savefig("results/fig5_collapse_rate.png",dpi=170)
+fig.tight_layout(rect=[0,.07,1,.92]); fig.savefig(os.path.join(HERE, "results", "fig5_collapse_rate.png"), dpi=170)
 print("wrote results/fig5_collapse_rate.png")

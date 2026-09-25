@@ -7,7 +7,8 @@ has to be accumulated across shards rather than found in one.
 """
 import tarfile, urllib.request, csv, collections, os, json, sys
 csv.field_size_limit(10**7)
-OUT = "data/english_cv"; os.makedirs(OUT, exist_ok=True)
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(HERE, "data", "english_cv"); os.makedirs(OUT, exist_ok=True)
 # CV train shards are ordered by speaker density: shard 0 holds only speakers with
 # <=5 clips, shard 14 has median 187 clips/speaker, shard 27 is one mega-speaker.
 # Fetch from the dense middle rather than scanning from the start.
@@ -17,7 +18,7 @@ URL = ("https://huggingface.co/datasets/fsicoli/common_voice_17_0/resolve/main/"
        "audio/en/train/en_train_{i}.tar")
 
 spk, dense = {}, collections.Counter()
-with open("data/cv_en_train.tsv", encoding="utf-8") as fh:
+with open(os.path.join(HERE, "data", "cv_en_train.tsv"), encoding="utf-8") as fh:
     for r in csv.DictReader(fh, delimiter="\t", quoting=csv.QUOTE_NONE):
         spk[r["path"]] = r["client_id"]; dense[r["client_id"]] += 1
 keep = {s for s, n in dense.items() if n >= 100}
@@ -47,5 +48,5 @@ for i in SHARDS:
           flush=True)
     if ok >= NEED_SPK:
         break
-json.dump({s: n for s, n in have.items()}, open("data/english_speaker_counts.json", "w"))
+json.dump({s: n for s, n in have.items()}, open(os.path.join(HERE, "data", "english_speaker_counts.json"), "w"))
 print("DONE", sum(1 for v in have.values() if v >= NEED_UTT), "usable speakers")

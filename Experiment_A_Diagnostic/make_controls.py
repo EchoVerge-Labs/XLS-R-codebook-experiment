@@ -9,7 +9,7 @@ are held constant and only the manipulation differs.
 """
 import os, json, numpy as np, soundfile as sf, torch, torchaudio
 
-ROOT  = os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic")
+ROOT  = os.path.dirname(os.path.abspath(__file__))
 STAGE = f"{ROOT}/data/staged"
 SR, N = 16000, 300
 

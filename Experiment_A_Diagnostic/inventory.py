@@ -1,7 +1,9 @@
 import os, collections, csv
+HERE = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.expanduser("~/google-drive/Pre Processed Data")
 rows_out=[]
-for lang, f in [("Sinhala","results/_inventory_sinhala.tsv"),("Tamil","results/_inventory_tamil.tsv")]:
+for lang, f in [("Sinhala", os.path.join(HERE, "results", "_inventory_sinhala.tsv")),
+                ("Tamil", os.path.join(HERE, "results", "_inventory_tamil.tsv"))]:
     per = collections.defaultdict(lambda: [0,0.0])   # genre -> [nfiles, seconds]
     for line in open(f):
         sz, p = line.rstrip("\n").split("\t", 1)
@@ -21,6 +23,6 @@ for lang, f in [("Sinhala","results/_inventory_sinhala.tsv"),("Tamil","results/_
     print("-"*74)
     print(f"{'TOTAL':<24}{tot_n:>9,}{tot_s/3600:>10.2f}{100.0:>8.1f}%{tot_s/tot_n:>13.2f}")
     rows_out.append(dict(language=lang, genre="TOTAL", files=tot_n, hours=round(tot_s/3600,3), mean_dur_s=round(tot_s/tot_n,2)))
-with open("results/data_inventory.csv","w",newline="") as fh:
+with open(os.path.join(HERE, "results", "data_inventory.csv"), "w", newline="") as fh:
     w=csv.DictWriter(fh, fieldnames=["language","genre","files","hours","mean_dur_s"]); w.writeheader(); w.writerows(rows_out)
 print("\n-> results/data_inventory.csv")

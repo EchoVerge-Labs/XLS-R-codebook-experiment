@@ -15,7 +15,7 @@ checked downstream: the unblocked InfoNCE must reproduce masked_probe.py.
 """
 import os, json, random, tarfile, zipfile, urllib.request
 
-ROOT = os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic")
+ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = f"{ROOT}/data"
 SLR = f"{DATA}/openslr"
 SEED, N_PER_LANG = 1234, 1000

@@ -13,7 +13,7 @@ rebound before each Diagnostic is constructed; nothing else is altered.
 import os, sys, json, time, argparse
 import numpy as np, pandas as pd, torch
 
-STAGE_A = os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic")
+STAGE_A = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Experiment_A_Diagnostic")
 sys.path.insert(0, STAGE_A)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 

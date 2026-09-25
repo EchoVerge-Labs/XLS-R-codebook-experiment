@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import analyse_b as A
 from selection import PAIRS, META, ARM_ROLES, PROXIMITY_SENSITIVITY
 
-RES = "results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 CK = {"xlsr53": "facebook/wav2vec2-large-xlsr-53",
       "xlsr300m": "facebook/wav2vec2-xls-r-300m"}
 

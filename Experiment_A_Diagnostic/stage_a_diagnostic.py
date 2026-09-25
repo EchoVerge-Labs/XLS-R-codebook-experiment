@@ -59,7 +59,7 @@ import torch, soundfile as sf, torchaudio
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2ForPreTraining
 
 warnings.filterwarnings("ignore", category=UserWarning)
-ROOT    = os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic")
+ROOT    = os.path.dirname(os.path.abspath(__file__))
 RESULTS = os.path.join(ROOT, "results")
 MODEL   = os.environ.get("XLSR_MODEL", "facebook/wav2vec2-xls-r-300m")  # XLS-R 0.3B
 RESULTS = os.environ.get("XLSR_RESULTS", RESULTS)

@@ -2,7 +2,7 @@
 so the size of the language effect can be read against the metric's actual range."""
 import os, json, numpy as np, matplotlib
 matplotlib.use("Agg"); import matplotlib.pyplot as plt
-RES = os.environ.get("XLSR_RESULTS", "results")
+RES = os.environ.get("XLSR_RESULTS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "results"))
 MODEL_SHORT = os.environ.get("MODEL_SHORT", "XLS-R 0.3B (wav2vec2-xls-r-300m)")
 BASE = "English_CV"
 LANG = ["Sinhala_YT", "Tamil_YT", "Sinhala_read", "Tamil_read"]

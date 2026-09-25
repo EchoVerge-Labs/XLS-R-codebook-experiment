@@ -1,5 +1,5 @@
 import numpy as np, json, pandas as pd, os
-RES=os.environ.get("XLSR_RESULTS","results"); base="English_CV"
+RES=os.environ.get("XLSR_RESULTS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")); base="English_CV"
 order=[base,"Sinhala_YT","Tamil_YT","Sinhala_read","Tamil_read",
        "Ctl_SpeedPitch","Ctl_Babble","Ctl_Reversed","Ctl_Tones","Ctl_WhiteNoise"]
 def stats(c):

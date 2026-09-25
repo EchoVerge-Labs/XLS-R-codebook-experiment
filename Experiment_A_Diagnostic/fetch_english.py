@@ -1,6 +1,6 @@
 import io, os, sys, tarfile, urllib.request
 URL="https://huggingface.co/datasets/fsicoli/common_voice_17_0/resolve/main/audio/en/dev/en_dev_0.tar"
-OUT=os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic/data/english_cv")
+OUT=os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "english_cv")
 TARGET=1200
 req=urllib.request.Request(URL, headers={"User-Agent":"curl/8"})
 r=urllib.request.urlopen(req, timeout=120)

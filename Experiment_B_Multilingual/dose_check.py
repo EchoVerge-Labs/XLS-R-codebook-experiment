@@ -6,7 +6,7 @@ from scipy import stats
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import analyse_b as A
 from selection import META
-RES="results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 A.NAME.update({r["config"]:r["name"] for r in json.load(open(f"{RES}/fleurs_languages.json"))})
 fl={r["config"]:r for r in json.load(open(f"{RES}/fleurs_languages.json"))}
 df=pd.read_parquet(f"{RES}/per_file_metrics_full.parquet")

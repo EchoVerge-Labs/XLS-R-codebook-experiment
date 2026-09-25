@@ -6,7 +6,7 @@ from scipy import stats
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-ROOT = os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic")
+ROOT = os.path.dirname(os.path.abspath(__file__))
 RES = os.environ.get("XLSR_RESULTS", os.path.join(ROOT, "results"))
 MODEL_NAME = os.environ.get("XLSR_MODEL", "facebook/wav2vec2-xls-r-300m")
 MODEL_SHORT = {"facebook/wav2vec2-xls-r-300m": "XLS-R 0.3B (wav2vec2-xls-r-300m)",

@@ -165,8 +165,8 @@ python -m venv ~/venv
 The experiments ran on an NVIDIA DGX Spark (GB10, ARM64, CUDA 13.0). On ARM64, use the
 `cu130` wheel index; the commonly cited `cu121` wheels do not exist for aarch64.
 
-The full run order for each experiment, the path setup the scripts expect, and runtimes are
-in **[docs/reproducing.md](docs/reproducing.md)**. To regenerate the figures on this page from
+The full run order for each experiment, the storage paths some scripts read from, and
+runtimes are in **[docs/reproducing.md](docs/reproducing.md)**. To regenerate the figures on this page from
 the versioned results, with no data or GPU needed:
 
 ```bash

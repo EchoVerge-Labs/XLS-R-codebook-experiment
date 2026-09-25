@@ -9,7 +9,7 @@ import analyse_b as A
 from selection import PAIRS, META
 from final_stats import tost_paired, MARGIN_PRIMARY, MARGIN_SECONDARY, STAGE_A_CONTROLS
 
-RES = "results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 ARMS = [("_full", "Full clips", "#1B3A54"), ("_crop6.0", "6.0 s crop", "#00798C"),
         ("_crop9.0", "9.0 s crop", "#7A9E9F")]
 C = {"SEEN": "#00798C", "UNSEEN": "#D1495B", "REFERENCE": "#4A4A4A"}

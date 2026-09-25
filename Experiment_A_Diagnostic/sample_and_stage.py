@@ -4,7 +4,7 @@ locally first keeps GPU inference from stalling on I/O."""
 import os, random, json, shutil, sys, collections
 from concurrent.futures import ThreadPoolExecutor
 
-ROOT   = os.path.expanduser("~/EchoVerge-LABS/Experiment_A_Diagnostic")
+ROOT   = os.path.dirname(os.path.abspath(__file__))
 CD     = os.path.expanduser("~/google-drive/Community Datasets")
 STAGE  = os.path.join(ROOT, "data", "staged")
 SEED, N_PER_LANG = 1234, 1000
