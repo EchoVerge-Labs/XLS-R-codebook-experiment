@@ -9,25 +9,15 @@ abstract: >-
   membership, layer-wise linear probing, and post-hoc code-overlap, synthetic
   codebook-deficit and fine-tuning analyses.
 authors:
-  - given-names: Anas
-    family-names: Hussaindeen
-    affiliation: University of Moratuwa
+  - name: "Anas Hussaindeen"
     orcid: "https://orcid.org/0009-0001-2856-4890"
-  - given-names: Ifadha
-    family-names: Imthiyas
-    affiliation: University of Moratuwa
+  - name: "Ifadha Imthiyas"
     orcid: "https://orcid.org/0009-0007-0606-969X"
-  - given-names: Vihanga
-    family-names: Muthumala
-    affiliation: University of Moratuwa
+  - name: "Vihanga Muthumala"
     orcid: "https://orcid.org/0009-0007-4159-1045"
-  - given-names: Samadhi
-    family-names: Talagala
-    affiliation: University of Moratuwa
+  - name: "Samadhi Talagala"
     orcid: "https://orcid.org/0009-0004-6376-3686"
-  - given-names: Uthayasanker
-    family-names: Thayasivam
-    affiliation: University of Moratuwa
+  - name: "Uthayasanker Thayasivam"
     orcid: "https://orcid.org/0000-0002-3936-8174"
 repository-code: "https://github.com/EchoVerge-Labs/XLS-R-codebook-experiment"
 license: MIT

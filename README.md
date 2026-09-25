@@ -208,8 +208,8 @@ and BibTeX from it.
 
 ```bibtex
 @software{hussaindeen_xlsr_codebook_experiments,
-  author = {Hussaindeen, Anas and Imthiyas, Ifadha and Muthumala, Vihanga and
-            Talagala, Samadhi and Thayasivam, Uthayasanker},
+  author = {Anas Hussaindeen and Ifadha Imthiyas and Vihanga Muthumala and
+            Samadhi Talagala and Uthayasanker Thayasivam},
   title  = {{XLS-R} codebook experiments: equivalence-bounded tests of the acoustic
             codebook on {Sinhala} and {Tamil}},
   url    = {https://github.com/EchoVerge-Labs/XLS-R-codebook-experiment},
